@@ -1,18 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <title>My first three.js app</title>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistema Solar - Base do Projeto</title>
     <style>
-        body {
-            margin: 0;
-        }
+      body {
+        margin: 0;
+        overflow: hidden;
+        background-color: #000;
+        font-family: sans-serif;
+      }
+      /* Container para a cena 3D e as etiquetas */
+      #webgl-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+      /* Estilo para as etiquetas dos planetas */
+      .label {
+        color: #ffffff;
+        font-size: 14px;
+        text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+          1px 1px 0 #000;
+      }
     </style>
-</head>
+  </head>
+  <body>
+    <!-- Onde a cena 3D será desenhada -->
+    <div id="webgl-container"></div>
 
-<body>
-    <script type="module" src="/main.js"></script>
-</body>
-
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.165.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.165.0/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module" src="main.js"></script>
+  </body>
 </html>
