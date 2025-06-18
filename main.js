@@ -63,6 +63,53 @@ function createOrbitLine(radius) {
 
 // "Fábrica" que cria qualquer corpo celeste
 function createCelestialBody(data) {
+  if (data.ring != undefined) {
+    const ring_texture = textureLoader.load(data.ring.texture)
+    ring_texture.center.set(0.5, 0.5);
+
+    const raio_interno = data.size + 2;
+    const raio_externo = data.size + 8;
+    const ring_geometry = new THREE.RingGeometry(raio_interno, raio_externo, 64);
+
+    const pos = ring_geometry.attributes.position;
+    const uv = ring_geometry.attributes.uv;
+
+    for (let i = 0; i < uv.count; i++) {
+      const x = pos.getX(i);
+      const y = pos.getY(i);
+      const radius = Math.sqrt(x * x + y * y);
+      const u = (radius - raio_interno) / (raio_externo - raio_interno);
+      uv.setXY(i, u, 0.5); // Valor Y constante, pois a imagem é uma faixa horizontal
+    }
+
+    const ring_material = new THREE.MeshBasicMaterial({
+      map: ring_texture,
+      transparent: true,
+      side: THREE.DoubleSide
+    })
+    const ring = new THREE.Mesh(ring_geometry, ring_material);
+    ring.rotation.x = 1.2;
+    ring.rotation.y = 0.0;
+    ring.rotation.z = 0.0;
+    ring.position.set(0, data.size * 1.5, 0)
+    data.ring = ring;
+    scene.add(ring);
+  }
+
+
+  // Adiciona todas as luas que o planeta possui
+  if (data.moons != undefined && data.moons.length != 0) {
+    for (let lua = 0; lua < data.moons.length; lua++) {
+      const lua_geometria = new THREE.SphereGeometry(data.moons[lua].size, 64, 64)
+      const lua_material = new THREE.MeshBasicMaterial({
+        map: textureLoader.load(data.moons[lua].texture)
+      })
+      const moon = new THREE.Mesh(lua_geometria, lua_material)
+      scene.add(moon)
+      data.moons[lua].mesh = moon;
+    }
+  }
+
   const geometry = new THREE.SphereGeometry(data.size, 64, 64);
   const material = new THREE.MeshBasicMaterial({
     map: textureLoader.load(data.texture),
@@ -120,6 +167,15 @@ const celestialBodies = [
     radius: 68,
     speed: 1.0,
     baseRotation: 0.05,
+    moons: [
+      {
+        texture: "textures/8k_moon.jpg",
+        size: 0.6,
+        baseRotation: 0.02,
+        radius: 5,
+        speed: 0.3,
+      }
+    ]
   }),
   createCelestialBody({
     name: "mars",
@@ -138,6 +194,40 @@ const celestialBodies = [
     radius: 120,
     speed: 0.4,
     baseRotation: 0.12,
+    moons: [
+      {
+        label: "Europa",
+        texture: "textures/europa.jpg",
+        size: 0.4,
+        baseRotation: 0.01,
+        radius: 13,
+        speed: 0.8,
+      },
+      {
+        label: "Callisto",
+        texture: "textures/callisto.jpg",
+        size: 0.5,
+        baseRotation: 0.01,
+        radius: 19,
+        speed: 0.4,
+      },
+      {
+        label: "Ganymedes",
+        texture: "textures/ganymede.jpg",
+        size: 0.5,
+        baseRotation: 0.01,
+        radius: 15,
+        speed: 0.7,
+      },
+      {
+        label: "IO",
+        texture: "textures/io.png",
+        size: 0.7,
+        baseRotation: 0.01,
+        radius: 11,
+        speed: 1,
+      },
+    ]
   }),
   createCelestialBody({
     name: "saturn",
@@ -147,6 +237,19 @@ const celestialBodies = [
     radius: 160,
     speed: 0.3,
     baseRotation: 0.11,
+    ring: {
+      texture: "textures/8k_saturn_ring_alpha.png"
+    },
+    moons: [
+      {
+        label: "Titan",
+        texture: "textures/titan.png",
+        size: 0.5,
+        baseRotation: 0.001,
+        radius: 18,
+        speed: 1,
+      },
+    ]
   }),
   createCelestialBody({
     name: "uranus",
@@ -165,12 +268,21 @@ const celestialBodies = [
     radius: 240,
     speed: 0.15,
     baseRotation: 0.07,
+    moons: [
+      {
+        label: "Triton",
+        texture: "textures/triton.jpg",
+        size: 0.4,
+        baseRotation: 0.001,
+        radius: 12,
+        speed: 0.7,
+      },
+    ]
   }),
 ];
 
 // --- 4. LOOP DE ANIMAÇÃO ---
 const clock = new THREE.Clock();
-
 function animate() {
   requestAnimationFrame(animate);
   const elapsedTime = clock.getElapsedTime();
@@ -184,8 +296,32 @@ function animate() {
       const angle = elapsedTime * body.speed * 0.1;
       body.mesh.position.x = Math.cos(angle) * body.radius;
       body.mesh.position.z = Math.sin(angle) * body.radius;
+      // atualiza os aneis do planeta caso possua
+      if (body.ring != undefined) {
+        body.ring.position.copy(body.mesh.position)
+      }
     }
+
+    // atualiza a posicao das luas de cada planeta
+    if (body.moons != undefined) {
+      for (let i = 0; i < body.moons.length; i++) {
+        const moon = body.moons[i];
+
+        const moonAngle = elapsedTime * moon.speed * 0.5;
+        const offsetX = Math.cos(moonAngle) * moon.radius;
+        const offsetZ = Math.sin(moonAngle) * moon.radius;
+
+        moon.mesh.position.x = body.mesh.position.x + offsetX;
+        moon.mesh.position.y = body.mesh.position.y;
+        moon.mesh.position.z = body.mesh.position.z + offsetZ;
+        moon.mesh.rotation.y += moon.speed;
+      }
+    }
+
   });
+
+  // atualiza a posicao da camera em relacao ao corpo celeste focado
+  controls.target.copy(celestialBodies[corpoCelesteFocado].mesh.position)
 
   controls.update();
   renderer.render(scene, camera);
@@ -199,6 +335,36 @@ window.addEventListener("resize", () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   labelRenderer.setSize(window.innerWidth, window.innerHeight);
 });
+
+let corpoCelesteFocado = 0;
+
+function focarCorpoCeleste(nome) {
+  for (let i = 0; i < celestialBodies.length; i++) {
+    if (celestialBodies[i].name == nome) {
+      break;
+    }
+  }
+}
+
+// Listener para mudar o objeto celeste em foco
+window.addEventListener("keydown", (key) => {
+  switch (key.key) {
+    case "ArrowRight":
+      focarCorpoCeleste(celestialBodies[corpoCelesteFocado].name);
+      corpoCelesteFocado++;
+      if (corpoCelesteFocado >= celestialBodies.length) {
+        corpoCelesteFocado = 0;
+      }
+      break;
+    case "ArrowLeft":
+      focarCorpoCeleste(celestialBodies[corpoCelesteFocado].name);
+      corpoCelesteFocado--;
+      if (corpoCelesteFocado < 0) {
+        corpoCelesteFocado = celestialBodies.length - 1;
+      }
+      break;
+  }
+})
 
 // Inicia a animação!
 animate();
