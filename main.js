@@ -285,17 +285,23 @@ const celestialBodies = [
 const clock = new THREE.Clock();
 function animate() {
   requestAnimationFrame(animate);
-  const elapsedTime = clock.getElapsedTime();
+  const deltaTime = clock.getDelta();
 
   celestialBodies.forEach((body) => {
     // Rotação (girar em torno do próprio eixo)
     body.mesh.rotation.y += body.baseRotation;
 
+    // inicializa o angulo do planeta para 0
+    if (body.radius && body.angle === undefined) {
+      body.angle = 0;
+    }
+
     // Translação (girar em torno do Sol), se aplicável
     if (body.radius) {
-      const angle = elapsedTime * body.speed * 0.1;
-      body.mesh.position.x = Math.cos(angle) * body.radius;
-      body.mesh.position.z = Math.sin(angle) * body.radius;
+      //const angle = elapsedTime * body.speed * 0.1;
+      body.angle += deltaTime * body.speed * 0.1;
+      body.mesh.position.x = Math.cos(body.angle) * body.radius;
+      body.mesh.position.z = Math.sin(body.angle) * body.radius;
       // atualiza os aneis do planeta caso possua
       if (body.ring != undefined) {
         body.ring.position.copy(body.mesh.position)
@@ -307,9 +313,14 @@ function animate() {
       for (let i = 0; i < body.moons.length; i++) {
         const moon = body.moons[i];
 
-        const moonAngle = elapsedTime * moon.speed * 0.5;
-        const offsetX = Math.cos(moonAngle) * moon.radius;
-        const offsetZ = Math.sin(moonAngle) * moon.radius;
+        // inicializa o angulo da lua
+        if (moon.angle === undefined) {
+          moon.angle = 0;
+        }
+
+        moon.angle = deltaTime * moon.speed * 0.5;
+        const offsetX = Math.cos(moon.angle) * moon.radius;
+        const offsetZ = Math.sin(moon.angle) * moon.radius;
 
         moon.mesh.position.x = body.mesh.position.x + offsetX;
         moon.mesh.position.y = body.mesh.position.y;
@@ -336,13 +347,19 @@ window.addEventListener("resize", () => {
   labelRenderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-let corpoCelesteFocado = 0;
+let corpoCelesteFocado = 2;
+updatePlanetInfo(celestialBodies[corpoCelesteFocado])
 
-function focarCorpoCeleste(nome) {
-  for (let i = 0; i < celestialBodies.length; i++) {
-    if (celestialBodies[i].name == nome) {
-      break;
-    }
+function updatePlanetInfo(body) {
+  if (body.name == "sun") {
+    document.getElementById("planets-info").style.display = "none";
+  }
+  else {
+    document.getElementById("planet-name").innerText = body.label || "Planeta";
+    document.getElementById("planets-info").style.display = "block";
+    document.getElementById("planet-radius").innerText = body.radius;
+    document.getElementById("planet-speed").innerText = body.speed.toFixed(2);
+    document.getElementById("planet-rotation").innerText = body.baseRotation.toFixed(2);
   }
 }
 
@@ -350,18 +367,36 @@ function focarCorpoCeleste(nome) {
 window.addEventListener("keydown", (key) => {
   switch (key.key) {
     case "ArrowRight":
-      focarCorpoCeleste(celestialBodies[corpoCelesteFocado].name);
       corpoCelesteFocado++;
       if (corpoCelesteFocado >= celestialBodies.length) {
         corpoCelesteFocado = 0;
       }
+      updatePlanetInfo(celestialBodies[corpoCelesteFocado])
       break;
     case "ArrowLeft":
-      focarCorpoCeleste(celestialBodies[corpoCelesteFocado].name);
       corpoCelesteFocado--;
       if (corpoCelesteFocado < 0) {
         corpoCelesteFocado = celestialBodies.length - 1;
       }
+      updatePlanetInfo(celestialBodies[corpoCelesteFocado])
+      break;
+    case "ArrowUp":
+      if (key.shiftKey) {
+        celestialBodies[corpoCelesteFocado].baseRotation += 0.01;
+      }
+      else {
+        celestialBodies[corpoCelesteFocado].speed += 0.1;
+      }
+      updatePlanetInfo(celestialBodies[corpoCelesteFocado])
+      break;
+    case "ArrowDown":
+      if (key.shiftKey) {
+        celestialBodies[corpoCelesteFocado].baseRotation -= 0.01;
+      }
+      else {
+        celestialBodies[corpoCelesteFocado].speed -= 0.1;
+      }
+      updatePlanetInfo(celestialBodies[corpoCelesteFocado])
       break;
   }
 })
