@@ -35,8 +35,26 @@ export function createCelestialBody(data) {
       data.size + 8,
       64
     );
+
+    const ringTexture = textureLoader.load(data.ring.texture)
+    ringTexture.center.set(0.5, 0.5);
+
+    const raio_interno = data.size + 2;
+    const raio_externo = data.size + 8;
+
+    const pos = ringGeometry.attributes.position;
+    const uv = ringGeometry.attributes.uv;
+
+    for (let i = 0; i < uv.count; i++) {
+      const x = pos.getX(i);
+      const y = pos.getY(i);
+      const radius = Math.sqrt(x * x + y * y);
+      const u = (radius - raio_interno) / (raio_externo - raio_interno);
+      uv.setXY(i, u, 0.5); // Valor Y constante, pois a imagem é uma faixa horizontal
+    }
+
     const ringMaterial = new THREE.MeshBasicMaterial({
-      map: textureLoader.load(data.ring.texture),
+      map: ringTexture,
       transparent: true,
       side: THREE.DoubleSide,
     });
