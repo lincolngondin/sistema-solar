@@ -8,7 +8,6 @@ import {
 } from "./sceneSetup.js";
 import { celestialBodies } from "./celestialData.js";
 import { AppState } from "./ui.js";
-import { Constants } from "./celestialData.js";
 
 const clock = new THREE.Clock();
 
@@ -17,35 +16,31 @@ export function animate() {
   const deltaTime = clock.getDelta();
 
   celestialBodies.forEach((body) => {
-    // A rotação agora usa o painel de controle
-    body.mesh.rotation.y += (body.baseRotation || 0) * deltaTime;
+    body.mesh.rotation.y += body.baseRotation * deltaTime * 10;
 
-    // Animação da órbita do planeta
-    if (body.radius > 0) {
-      body.angle = (body.angle ?? 0) + deltaTime * body.speed;
-      body.pivot.position.x = Math.cos(body.angle) * body.radius;
-      body.pivot.position.z = Math.sin(body.angle) * body.radius;
+    if (body.radius) {
+      body.angle = (body.angle ?? 0) + deltaTime * body.speed * 0.5;
+      body.mesh.position.x = Math.cos(body.angle) * body.radius;
+      body.mesh.position.z = Math.sin(body.angle) * body.radius;
     }
 
-    // ANIMAÇÃO DAS LUAS CORRIGIDA
     if (body.moons) {
       body.moons.forEach((moon) => {
-        moon.angle = (moon.angle ?? 0) + deltaTime * moon.speed;
-        // Posição local em relação ao pivô do planeta, não à cena
-        moon.mesh.position.x = Math.cos(moon.angle) * moon.radius;
-        moon.mesh.position.z = Math.sin(moon.angle) * moon.radius;
+        moon.angle = (moon.angle ?? 0) + deltaTime * moon.speed * 2;
+        moon.mesh.position.x =
+          body.mesh.position.x + Math.cos(moon.angle) * moon.radius;
+        moon.mesh.position.z =
+          body.mesh.position.z + Math.sin(moon.angle) * moon.radius;
         moon.mesh.rotation.y += moon.baseRotation;
       });
     }
   });
 
-  const targetBody = celestialBodies[AppState.focusedBodyIndex];
-  const targetPosition = new THREE.Vector3();
-  // Usa o pivô como alvo para uma câmera mais estável
-  targetBody.pivot.getWorldPosition(targetPosition);
-  controls.target.lerp(targetPosition, 0.05);
-
+  controls.target.copy(
+    celestialBodies[AppState.focusedBodyIndex].mesh.position
+  );
   controls.update();
+
   renderer.render(scene, camera);
   labelRenderer.render(scene, camera);
 }

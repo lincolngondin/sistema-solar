@@ -3,7 +3,7 @@ import { celestialBodies } from "./celestialData.js";
 
 // Objeto para compartilhar o estado da aplicação entre os módulos
 export const AppState = {
-  focusedBodyIndex: 2, // Começa na Terra (índice 2)
+  focusedBodyIndex: 0, // Começa na Terra (índice 2)
 };
 
 export function updatePlanetInfo() {

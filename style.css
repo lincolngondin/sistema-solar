@@ -1,0 +1,66 @@
+body {
+  margin: 0;
+  overflow: hidden;
+  background-color: #000;
+  font-family: sans-serif;
+}
+
+/* Container para a cena 3D e as etiquetas */
+#webgl-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Estilo para as etiquetas dos planetas */
+.label {
+  color: #ffffff;
+  font-size: 14px;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+    1px 1px 0 #000;
+}
+
+.menu {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  font-family: monospace;
+  color: black;
+  padding: 12px 10px;
+}
+
+#planets-info {
+  width: 20%;
+  top: 10px;
+  right: 10px;
+  display: none;
+}
+
+#planet-name {
+  margin: 0;
+  text-decoration: underline;
+  text-transform: uppercase;
+}
+
+#planet-details > p {
+  margin: 4px 0;
+  padding: 0;
+}
+
+#controls-info {
+  top: 10px;
+  left: 10px;
+}
+
+.tecla {
+  margin: 0.6rem 0.1rem;
+}
+
+.key {
+  background-color: black;
+  padding: 0.2rem;
+  color: white;
+  border-radius: 0.2rem;
+  width: 15%;
+  font-family: sans-serif;
+}

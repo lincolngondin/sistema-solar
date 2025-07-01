@@ -9,7 +9,7 @@ const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
   0.1,
-  4000
+  2000
 );
 camera.position.set(0, 80, 250);
 
@@ -32,9 +32,5 @@ controls.enableDamping = true;
 scene.background = textureLoader.load("textures/8k_stars.jpg", (t) => {
   t.mapping = THREE.EquirectangularReflectionMapping;
 });
-
-// Luz ambiente para que as partes escuras não sejam totalmente pretas
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
-scene.add(ambientLight);
 
 export { scene, camera, renderer, labelRenderer, controls, textureLoader };
