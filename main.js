@@ -64,12 +64,16 @@ function createOrbitLine(radius) {
 // "Fábrica" que cria qualquer corpo celeste
 function createCelestialBody(data) {
   if (data.ring != undefined) {
-    const ring_texture = textureLoader.load(data.ring.texture)
+    const ring_texture = textureLoader.load(data.ring.texture);
     ring_texture.center.set(0.5, 0.5);
 
     const raio_interno = data.size + 2;
     const raio_externo = data.size + 8;
-    const ring_geometry = new THREE.RingGeometry(raio_interno, raio_externo, 64);
+    const ring_geometry = new THREE.RingGeometry(
+      raio_interno,
+      raio_externo,
+      64
+    );
 
     const pos = ring_geometry.attributes.position;
     const uv = ring_geometry.attributes.uv;
@@ -85,27 +89,30 @@ function createCelestialBody(data) {
     const ring_material = new THREE.MeshBasicMaterial({
       map: ring_texture,
       transparent: true,
-      side: THREE.DoubleSide
-    })
+      side: THREE.DoubleSide,
+    });
     const ring = new THREE.Mesh(ring_geometry, ring_material);
     ring.rotation.x = 1.2;
     ring.rotation.y = 0.0;
     ring.rotation.z = 0.0;
-    ring.position.set(0, data.size * 1.5, 0)
+    ring.position.set(0, data.size * 1.5, 0);
     data.ring = ring;
     scene.add(ring);
   }
 
-
   // Adiciona todas as luas que o planeta possui
   if (data.moons != undefined && data.moons.length != 0) {
     for (let lua = 0; lua < data.moons.length; lua++) {
-      const lua_geometria = new THREE.SphereGeometry(data.moons[lua].size, 64, 64)
+      const lua_geometria = new THREE.SphereGeometry(
+        data.moons[lua].size,
+        64,
+        64
+      );
       const lua_material = new THREE.MeshBasicMaterial({
-        map: textureLoader.load(data.moons[lua].texture)
-      })
-      const moon = new THREE.Mesh(lua_geometria, lua_material)
-      scene.add(moon)
+        map: textureLoader.load(data.moons[lua].texture),
+      });
+      const moon = new THREE.Mesh(lua_geometria, lua_material);
+      scene.add(moon);
       data.moons[lua].mesh = moon;
     }
   }
@@ -174,8 +181,8 @@ const celestialBodies = [
         baseRotation: 0.02,
         radius: 5,
         speed: 0.3,
-      }
-    ]
+      },
+    ],
   }),
   createCelestialBody({
     name: "mars",
@@ -227,7 +234,7 @@ const celestialBodies = [
         radius: 11,
         speed: 1,
       },
-    ]
+    ],
   }),
   createCelestialBody({
     name: "saturn",
@@ -238,7 +245,7 @@ const celestialBodies = [
     speed: 0.3,
     baseRotation: 0.11,
     ring: {
-      texture: "textures/8k_saturn_ring_alpha.png"
+      texture: "textures/8k_saturn_ring_alpha.png",
     },
     moons: [
       {
@@ -249,7 +256,7 @@ const celestialBodies = [
         radius: 18,
         speed: 1,
       },
-    ]
+    ],
   }),
   createCelestialBody({
     name: "uranus",
@@ -277,7 +284,7 @@ const celestialBodies = [
         radius: 12,
         speed: 0.7,
       },
-    ]
+    ],
   }),
 ];
 
@@ -304,7 +311,7 @@ function animate() {
       body.mesh.position.z = Math.sin(body.angle) * body.radius;
       // atualiza os aneis do planeta caso possua
       if (body.ring != undefined) {
-        body.ring.position.copy(body.mesh.position)
+        body.ring.position.copy(body.mesh.position);
       }
     }
 
@@ -328,11 +335,10 @@ function animate() {
         moon.mesh.rotation.y += moon.speed;
       }
     }
-
   });
 
   // atualiza a posicao da camera em relacao ao corpo celeste focado
-  controls.target.copy(celestialBodies[corpoCelesteFocado].mesh.position)
+  controls.target.copy(celestialBodies[corpoCelesteFocado].mesh.position);
 
   controls.update();
   renderer.render(scene, camera);
@@ -348,18 +354,18 @@ window.addEventListener("resize", () => {
 });
 
 let corpoCelesteFocado = 2;
-updatePlanetInfo(celestialBodies[corpoCelesteFocado])
+updatePlanetInfo(celestialBodies[corpoCelesteFocado]);
 
 function updatePlanetInfo(body) {
   if (body.name == "sun") {
     document.getElementById("planets-info").style.display = "none";
-  }
-  else {
+  } else {
     document.getElementById("planet-name").innerText = body.label || "Planeta";
     document.getElementById("planets-info").style.display = "block";
     document.getElementById("planet-radius").innerText = body.radius;
     document.getElementById("planet-speed").innerText = body.speed.toFixed(2);
-    document.getElementById("planet-rotation").innerText = body.baseRotation.toFixed(2);
+    document.getElementById("planet-rotation").innerText =
+      body.baseRotation.toFixed(2);
   }
 }
 
@@ -371,35 +377,33 @@ window.addEventListener("keydown", (key) => {
       if (corpoCelesteFocado >= celestialBodies.length) {
         corpoCelesteFocado = 0;
       }
-      updatePlanetInfo(celestialBodies[corpoCelesteFocado])
+      updatePlanetInfo(celestialBodies[corpoCelesteFocado]);
       break;
     case "ArrowLeft":
       corpoCelesteFocado--;
       if (corpoCelesteFocado < 0) {
         corpoCelesteFocado = celestialBodies.length - 1;
       }
-      updatePlanetInfo(celestialBodies[corpoCelesteFocado])
+      updatePlanetInfo(celestialBodies[corpoCelesteFocado]);
       break;
     case "ArrowUp":
       if (key.shiftKey) {
         celestialBodies[corpoCelesteFocado].baseRotation += 0.01;
-      }
-      else {
+      } else {
         celestialBodies[corpoCelesteFocado].speed += 0.1;
       }
-      updatePlanetInfo(celestialBodies[corpoCelesteFocado])
+      updatePlanetInfo(celestialBodies[corpoCelesteFocado]);
       break;
     case "ArrowDown":
       if (key.shiftKey) {
         celestialBodies[corpoCelesteFocado].baseRotation -= 0.01;
-      }
-      else {
+      } else {
         celestialBodies[corpoCelesteFocado].speed -= 0.1;
       }
-      updatePlanetInfo(celestialBodies[corpoCelesteFocado])
+      updatePlanetInfo(celestialBodies[corpoCelesteFocado]);
       break;
   }
-})
+});
 
 // Inicia a animação!
 animate();

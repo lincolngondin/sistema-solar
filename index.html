@@ -1,100 +1,113 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistema Solar - Base do Projeto</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        background-color: #000;
+        font-family: sans-serif;
+      }
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sistema Solar - Base do Projeto</title>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background-color: #000;
-      font-family: sans-serif;
-    }
+      /* Container para a cena 3D e as etiquetas */
+      #webgl-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
 
-    /* Container para a cena 3D e as etiquetas */
-    #webgl-container {
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
+      /* Estilo para as etiquetas dos planetas */
+      .label {
+        color: #ffffff;
+        font-size: 14px;
+        text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+          1px 1px 0 #000;
+      }
 
-    /* Estilo para as etiquetas dos planetas */
-    .label {
-      color: #ffffff;
-      font-size: 14px;
-      text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
-        1px 1px 0 #000;
-    }
+      .menu {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 8px;
+        font-family: monospace;
+        color: black;
+        padding: 12px 10px;
+      }
 
-    .menu {
-      position: absolute;
-      background: rgba(255, 255, 255, 0.8);
-      border-radius: 8px;
-      font-family: monospace;
-      color: black;
-      padding: 12px 10px;
-    }
+      #planets-info {
+        width: 20%;
+        top: 10px;
+        right: 10px;
+        display: none;
+      }
 
-    #planets-info {
-      width: 20%;
-      top: 10px;
-      right: 10px;
-      display: none;
-    }
+      #planet-name {
+        margin: 0;
+        text-decoration: underline;
+        text-transform: uppercase;
+      }
 
-    #planet-name {
-      margin: 0;
-      text-decoration: underline;
-      text-transform: uppercase;
-    }
+      #planet-details > p {
+        margin: 4px 0;
+        padding: 0;
+      }
 
-    #planet-details>p {
-      margin: 4px 0;
-      padding: 0;
-    }
+      #controls-info {
+        top: 10px;
+        left: 10px;
+      }
 
-    #controls-info {
-      top: 10px;
-      left: 10px;
-    }
+      .tecla {
+        margin: 0.6rem 0.1rem;
+      }
 
-    .tecla {
-      margin: .6rem .1rem;
-    }
+      .key {
+        background-color: black;
+        padding: 0.2rem;
+        color: white;
+        border-radius: 0.2rem;
+        width: 15%;
+        font-family: sans-serif;
+      }
+    </style>
+  </head>
 
-    .key {
-      background-color: black;
-      padding: .2rem;
-      color: white;
-      border-radius: .2rem;
-      width: 15%;
-      font-family: sans-serif;
-    }
-  </style>
-</head>
-
-<body>
-  <div id="webgl-container">
-    <div id="controls-info" class="menu">
-      <div>Controles:</div>
-      <div class="tecla">Trocar Planeta: <span class="key">←</span> e <span class="key">→</span></div>
-      <div class="tecla">+/- Vel. Translação: <span class="key">↑</span> e <span class="key">↓</span></div>
-      <div class="tecla">+/- Vel. Rotação: <span class="key">Shift</span> + <span class="key">↑</span> ou <span
-          class="key">↓</span></div>
-    </div>
-    <div id="planets-info" class="menu">
-      <h3 id="planet-name">Planeta</h3>
-      <div id="planet-details">
-        <p>Raio: <span id="planet-radius" class="planet-data"></span></p>
-        <p>Velocidade de Translação: <span id="planet-speed" class="planet-data"></span></p>
-        <p>Velocidade de Rotação: <span id="planet-rotation" class="planet-data"></span></p>
+  <body>
+    <div id="webgl-container">
+      <div id="controls-info" class="menu">
+        <div>Controles:</div>
+        <div class="tecla">
+          Trocar Planeta: <span class="key">←</span> e
+          <span class="key">→</span>
+        </div>
+        <div class="tecla">
+          +/- Vel. Translação: <span class="key">↑</span> e
+          <span class="key">↓</span>
+        </div>
+        <div class="tecla">
+          +/- Vel. Rotação: <span class="key">Shift</span> +
+          <span class="key">↑</span> ou <span class="key">↓</span>
+        </div>
+      </div>
+      <div id="planets-info" class="menu">
+        <h3 id="planet-name">Planeta</h3>
+        <div id="planet-details">
+          <p>Raio: <span id="planet-radius" class="planet-data"></span></p>
+          <p>
+            Velocidade de Translação:
+            <span id="planet-speed" class="planet-data"></span>
+          </p>
+          <p>
+            Velocidade de Rotação:
+            <span id="planet-rotation" class="planet-data"></span>
+          </p>
+        </div>
       </div>
     </div>
-  </div>
 
-  <script type="importmap">
+    <script type="importmap">
       {
         "imports": {
           "three": "https://unpkg.com/three@0.165.0/build/three.module.js",
@@ -102,7 +115,6 @@
         }
       }
     </script>
-  <script type="module" src="main.js"></script>
-</body>
-
+    <script type="module" src="main.js"></script>
+  </body>
 </html>
