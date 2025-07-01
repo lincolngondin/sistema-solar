@@ -4,6 +4,10 @@
 
 Demonstração do sistema solar feita usando a lib three.js para criação da cena 3D.
 
+## Link para o video de demonstração
+
+https://www.youtube.com/watch?v=MN-w1sKl8IA
+
 ## Controles
 
 - Tecla das setas para direita e esquerda permite **controlar o objeto celeste em foco**.

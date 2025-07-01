@@ -1,51 +1,52 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sistema Solar - Base do Projeto</title>
-    <!-- Link para a folha de estilos externa -->
-    <link rel="stylesheet" href="style.css" />
-  </head>
 
-  <body>
-    <div id="webgl-container"></div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistema Solar</title>
+  <!-- Link para a folha de estilos externa -->
+  <link rel="stylesheet" href="style.css" />
+</head>
 
-    <!-- A UI (Interface do Usuário) foi movida para fora do container 3D -->
-    <div id="ui-container">
-      <div id="controls-info" class="menu">
-        <div>Controles:</div>
-        <div class="tecla">
-          Trocar Planeta: <span class="key">←</span> e
-          <span class="key">→</span>
-        </div>
-        <div class="tecla">
-          +/- Vel. Translação: <span class="key">↑</span> e
-          <span class="key">↓</span>
-        </div>
-        <div class="tecla">
-          +/- Vel. Rotação: <span class="key">Shift</span> +
-          <span class="key">↑</span> ou <span class="key">↓</span>
-        </div>
+<body>
+  <div id="webgl-container"></div>
+
+  <!-- A UI (Interface do Usuário) foi movida para fora do container 3D -->
+  <div id="ui-container">
+    <div id="controls-info" class="menu">
+      <div>Controles:</div>
+      <div class="tecla">
+        Trocar Planeta: <span class="key">←</span> e
+        <span class="key">→</span>
       </div>
-      <div id="planets-info" class="menu">
-        <h3 id="planet-name">Planeta</h3>
-        <div id="planet-details">
-          <p>Raio: <span id="planet-radius" class="planet-data"></span></p>
-          <p>
-            Velocidade de Translação:
-            <span id="planet-speed" class="planet-data"></span>
-          </p>
-          <p>
-            Velocidade de Rotação:
-            <span id="planet-rotation" class="planet-data"></span>
-          </p>
-        </div>
+      <div class="tecla">
+        +/- Vel. Translação: <span class="key">↑</span> e
+        <span class="key">↓</span>
+      </div>
+      <div class="tecla">
+        +/- Vel. Rotação: <span class="key">Shift</span> +
+        <span class="key">↑</span> ou <span class="key">↓</span>
       </div>
     </div>
+    <div id="planets-info" class="menu">
+      <h3 id="planet-name">Planeta</h3>
+      <div id="planet-details">
+        <p>Raio: <span id="planet-radius" class="planet-data"></span></p>
+        <p>
+          Velocidade de Translação:
+          <span id="planet-speed" class="planet-data"></span>
+        </p>
+        <p>
+          Velocidade de Rotação:
+          <span id="planet-rotation" class="planet-data"></span>
+        </p>
+      </div>
+    </div>
+  </div>
 
-    <!-- Import Map para o navegador encontrar o Three.js -->
-    <script type="importmap">
+  <!-- Import Map para o navegador encontrar o Three.js -->
+  <script type="importmap">
       {
         "imports": {
           "three": "https://unpkg.com/three@0.165.0/build/three.module.js",
@@ -54,7 +55,8 @@
       }
     </script>
 
-    <!-- Link para o script principal -->
-    <script type="module" src="js/main.js"></script>
-  </body>
+  <!-- Link para o script principal -->
+  <script type="module" src="js/main.js"></script>
+</body>
+
 </html>
